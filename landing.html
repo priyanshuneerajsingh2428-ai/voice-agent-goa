@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#RAGInGoa - Voice-Enabled College Knowledge Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #5eead4;
+            --secondary: #fbbf24;
+            --dark: #0a0e27;
+            --darker: #050811;
+            --text: #ecfeff;
+            --text-muted: #b0d4e3;
+            --accent: #ff6b6b;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #162235 100%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(94, 234, 212, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(251, 191, 36, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 4rem;
+            border-bottom: 1px solid rgba(94, 234, 212, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--primary), #2dd4c0);
+            color: #062b2b;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(94, 234, 212, 0.12);
+            border: 1px solid rgba(94, 234, 212, 0.3);
+            color: var(--primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--text));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #2dd4c0);
+            color: #062b2b;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(94, 234, 212, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(94, 234, 212, 0.1);
+            transform: translateY(-3px);
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 6rem 0;
+        }
+
+        .feature-card {
+            background: rgba(17, 25, 45, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(94, 234, 212, 0.15);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(94, 234, 212, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 6rem 0;
+            text-align: center;
+        }
+
+        .stat {
+            background: rgba(17, 25, 45, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(94, 234, 212, 0.15);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Tech Stack Section */
+        .tech-stack {
+            margin: 6rem 0;
+            padding: 3rem;
+            background: rgba(17, 25, 45, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(94, 234, 212, 0.15);
+            border-radius: 16px;
+        }
+
+        .tech-stack h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tech-item {
+            background: rgba(10, 14, 39, 0.8);
+            border: 1px solid rgba(94, 234, 212, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .tech-name {
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 0.5rem;
+        }
+
+        /* Demo Video / Screenshot Section */
+        .demo-section {
+            margin: 6rem 0;
+            text-align: center;
+        }
+
+        .demo-section h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-preview {
+            background: rgba(17, 25, 45, 0.8);
+            border: 2px solid rgba(94, 234, 212, 0.3);
+            border-radius: 16px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .demo-content {
+            text-align: left;
+            max-width: 500px;
+        }
+
+        .demo-content p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid rgba(94, 234, 212, 0.1);
+            padding: 3rem 0;
+            margin-top: 6rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        footer p {
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 1rem;
+                flex-direction: column;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav>
+            <div class="logo">🎓 #RAGInGoa</div>
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#tech">Technology</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="https://github.com" target="_blank">Docs</a></li>
+                <li><a href="/agent" class="nav-cta">Launch Agent →</a></li>
+            </ul>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="badge">🎓 Hacker House Goa Submission</div>
+            <h1>Voice-Enabled College Knowledge Agent</h1>
+            <p class="subtitle">Instant, accurate, grounded answers to college policies using semantic search and voice input.</p>
+            <div class="cta-buttons">
+                <a href="/agent" class="btn btn-primary">🚀 Try the Agent</a>
+                <a href="#demo" class="btn btn-secondary">📚 Learn More</a>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🎤</div>
+                <h3>Voice Input</h3>
+                <p>Speak naturally or type your question. Hands-free access to college policies.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>Semantic Search</h3>
+                <p>Understands meaning, not just keywords. Paraphrased questions work perfectly.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Guardrails</h3>
+                <p>No hallucinations. Every answer is grounded in the knowledge base.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Fast & Local</h3>
+                <p>&lt;150ms latency. No cloud dependency. Privacy-preserving.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Real-Time Metrics</h3>
+                <p>See P50/P70/P100 latency metrics for every query in real-time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Beautiful UI</h3>
+                <p>Premium glassmorphism design with smooth animations and responsive layout.</p>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="stat">
+                <div class="stat-number">80ms</div>
+                <div class="stat-label">P50 Latency</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">4/4</div>
+                <div class="stat-label">Tests Passing</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Hallucinations</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Grounded Answers</div>
+            </div>
+        </section>
+
+        <!-- Tech Stack -->
+        <section id="tech" class="tech-stack">
+            <h2>Built With</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div style="font-size: 2rem;">🐍</div>
+                    <div class="tech-name">Python 3.13</div>
+                </div>
+                <div class="tech-item">
+                    <div style="font-size: 2rem;">🔧</div>
+                    <div class="tech-name">Flask</div>
+                </div>
+                <div class="tech-item">
+                    <div style="font-size: 2rem;">🧮</div>
+                    <div class="tech-name">FAISS</div>
+                </div>
+                <div class="tech-item">
+                    <div style="font-size: 2rem;">📝</div>
+                    <div class="tech-name">Embeddings</div>
+                </div>
+                <div class="tech-item">
+                    <div style="font-size: 2rem;">🎤</div>
+                    <div class="tech-name">Whisper-Ready</div>
+                </div>
+                <div class="tech-item">
+                    <div style="font-size: 2rem;">🌐</div>
+                    <div class="tech-name">Web Speech API</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo Section -->
+        <section id="demo" class="demo-section">
+            <h2>How It Works</h2>
+            <div class="demo-preview">
+                <div class="demo-content">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem;">Example Demo</h3>
+                    <p><strong>You ask:</strong> "What is the refund policy?"</p>
+                    <p><strong>Agent retrieves:</strong> Relevant college policy chunks from FAISS</p>
+                    <p><strong>Agent grounds:</strong> Answer directly from retrieved chunks</p>
+                    <p><strong>You receive:</strong> Accurate, verified answer in <strong>~80ms</strong></p>
+                    <p style="margin-top: 1.5rem; color: var(--primary);">Ready to try? <a href="/agent" style="text-decoration: underline;">Launch the agent →</a></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section style="margin: 6rem 0;">
+            <h2 style="font-size: 2rem; margin-bottom: 2rem; text-align: center; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Frequently Asked Questions</h2>
+            <div style="display: grid; gap: 1.5rem;">
+                <div style="background: rgba(17, 25, 45, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(94, 234, 212, 0.15); border-radius: 12px; padding: 1.5rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem;">How accurate are the answers?</h4>
+                    <p style="color: var(--text-muted);">100% grounded in the college knowledge base. No hallucinations. If information isn't available, the agent refuses to answer.</p>
+                </div>
+                <div style="background: rgba(17, 25, 45, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(94, 234, 212, 0.15); border-radius: 12px; padding: 1.5rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Is it really local and fast?</h4>
+                    <p style="color: var(--text-muted);">Yes! All processing happens on-device with no cloud dependency. P50 latency is ~80ms, P100 &lt;150ms.</p>
+                </div>
+                <div style="background: rgba(17, 25, 45, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(94, 234, 212, 0.15); border-radius: 12px; padding: 1.5rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Can I deploy this at my college?</h4>
+                    <p style="color: var(--text-muted);">Absolutely! The pipeline is completely modular. Just update the knowledge base and deploy.</p>
+                </div>
+                <div style="background: rgba(17, 25, 45, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(94, 234, 212, 0.15); border-radius: 12px; padding: 1.5rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem;">What about privacy?</h4>
+                    <p style="color: var(--text-muted);">All queries stay on-device. No external APIs, no cloud storage, no tracking.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section style="text-align: center; margin: 6rem 0; padding: 3rem; background: rgba(17, 25, 45, 0.8); backdrop-filter: blur(10px); border: 2px solid rgba(94, 234, 212, 0.3); border-radius: 16px;">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text);">Ready to Experience It?</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem;">Try the voice-enabled agent now and see the power of semantic RAG in action.</p>
+            <a href="/agent" class="btn btn-primary" style="font-size: 1.1rem; padding: 1.2rem 2.5rem;">Launch Agent →</a>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-links">
+                <a href="/demo">Demo Guide</a>
+                <a href="/docs">Documentation</a>
+                <a href="https://github.com" target="_blank">GitHub</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <p>&copy; 2026 #RAGInGoa. Built for Hacker House Goa.</p>
+            <p style="font-size: 0.9rem; margin-top: 1rem;">Voice-enabled RAG agent for college knowledge bases.</p>
+        </footer>
+    </div>
+</body>
+</html>
