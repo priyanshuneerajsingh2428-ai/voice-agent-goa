@@ -1,9 +1,10 @@
+# Core runtime — deliberately lightweight. sentence-transformers + faiss
+# (which pull in torch, ~1GB+) are NOT installed by default because Render's
+# free tier (512MB RAM) commonly fails to build or OOMs at runtime with them.
+# The app works fully without them via the built-in TF-IDF fallback in
+# src/rag_pipeline.py — see requirements-full.txt to opt into real semantic
+# embeddings on a host with more memory.
 Flask==3.0.3
 python-dotenv==1.0.1
-pytest==8.3.2
 Werkzeug==3.0.6
-faiss-cpu==1.9.0.post1
-sentence-transformers==3.2.1
-numpy==2.1.2
 gunicorn==23.0.0
-

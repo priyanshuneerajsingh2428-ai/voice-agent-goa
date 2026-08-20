@@ -1,0 +1,6 @@
+# Opt-in: real semantic embeddings instead of the TF-IDF fallback.
+# Needs a host with real memory headroom (Render's paid tiers, not free).
+-r requirements.txt
+sentence-transformers==3.2.1
+faiss-cpu==1.9.0.post1
+numpy==2.1.2
